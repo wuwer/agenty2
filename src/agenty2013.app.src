@@ -1,0 +1,12 @@
+{application, agenty2013,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { agenty2013_app, []}},
+  {env, []}
+ ]}.
