@@ -1,4 +1,4 @@
-all: compile
+all: generate
 
 .PHONY: get-rebar get-deps
 
