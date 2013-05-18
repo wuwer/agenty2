@@ -12,6 +12,8 @@
 %% Helper macro for declaring children of supervisor
 -define(CHILD(I, Type), {I, {I, start_link, []}, permanent, 5000, Type, [I]}).
 -define(TRANSIENTCHILD(I, Type), {I, {I, start_link, []}, transient, 5000, Type, [I]}).
+-define(AGENT(I, Type), {I, {I, start, []}, transient, 5000, Type, [I]}).
+-define(AGENT2(I, Type), {I, {I, start2, []}, transient, 5000, Type, [I]}).
 
 %% ===================================================================
 %% API functions
@@ -27,6 +29,9 @@ start_link() ->
 init([]) ->
     {ok, { {one_for_one, 5, 10}, [
 %%				{simpleagent, {simplebahaviour, start, []}, permanent, 5000, worker, [simplebehaviour] }
-    			?TRANSIENTCHILD(seresye_test_worker, worker)	
+%%    			?TRANSIENTCHILD(seresye_test_worker, worker)	
+%%				?CHILD(dummy, worker)
+				?AGENT(simpleagent, worker)
+%%				,?AGENT2(simpleagent2, worker)
     			]} }.
 
