@@ -58,7 +58,7 @@ init([]) ->
 
 	io:format("~p~n", [Element]),
 	io:format("~p~n", ["Prints one of the records fields:"]),
-	io:format("~p~p~n", ["The first subject is: ", Element#element.relationship]),
+	io:format("~p~p~n", ["The relationship is: ", Element#element.relationship]),
     {ok, state_name, #state{}}.
 
 %%--------------------------------------------------------------------
