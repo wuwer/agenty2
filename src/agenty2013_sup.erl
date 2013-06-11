@@ -26,6 +26,7 @@ start_link() ->
 init([]) ->
 	seresye:start(search_mind),
     {ok, { {one_for_one, 5, 10}, [
-				?CHILD(search_agent, worker)
+				?CHILD(search_agent, worker),
+				?CHILD(xmldummy, worker)
     			]} }.
 

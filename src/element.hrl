@@ -1,0 +1,1 @@
+-record(element,{relationship, subject1, subject2}).

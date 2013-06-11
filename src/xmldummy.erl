@@ -16,6 +16,7 @@
          code_change/4]).
 
 -record(state, {}).
+-include("element.hrl").
 
 %%%===================================================================
 %%% API
@@ -51,7 +52,13 @@ start_link() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-	io:format("~p~n", ["modify me here"]),
+	io:format("~p~n", ["Creates and prints new element record"]),
+	Element = #element{relationship="related-to", subject1="ala", 
+						subject2="ola"},
+
+	io:format("~p~n", [Element]),
+	io:format("~p~n", ["Prints one of the records fields:"]),
+	io:format("~p~p~n", ["The first subject is: ", Element#element.relationship]),
     {ok, state_name, #state{}}.
 
 %%--------------------------------------------------------------------
