@@ -1,0 +1,12 @@
+<elements>
+	<element>
+		<relationship>related-to</relationship>
+		<subject>ala</subject>
+		<subject>ola</subject>
+	</element>
+	<element>
+		<relationship>related-to</relationship>
+		<subject>ela</subject>
+		<subject>ula</subject>
+	</element>
+</elements>
