@@ -1,7 +1,7 @@
 -module(test_agent).
 -import_all(agent).
 -behaviour(agent).
--export([init/2, execute/1, registration_info/1]).
+-export([init/2, execute/1, registration_info/1, quit/1]).
 -include("agent.hrl").
 
 init(Name, _Args) -> 
@@ -14,5 +14,8 @@ registration_info(Name) ->
 execute(State) ->
 	io:format("The test agent is now executing~n"),
 	State.
+
+quit(_State) ->
+	exit(normal).
 
 

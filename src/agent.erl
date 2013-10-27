@@ -1,8 +1,8 @@
 -module(agent).
--export([behaviour_info/1, start_link/3, init/3, main_loop/2, execute/1]).
+-export([behaviour_info/1, start_link/3, init/3, main_loop/2, execute/1, quit/1]).
 -include("agent.hrl").
 
-behaviour_info(callbacks) -> [{init,2}, {execute,1}, {registration_info,1}];
+behaviour_info(callbacks) -> [{init,2}, {execute,1}, {registration_info,1}, {quit,1}];
 behaviour_info(_) -> undefined.
 
 %% Starts a process of a new agent. The calling process becomes the agents supervisor
@@ -23,10 +23,16 @@ init(CallbackModule, Name, InitArgs) ->
 execute(Pid) ->
 	Pid ! execute.
 
+quit(Pid) ->
+	Pid ! quit.
+
 main_loop(CallbackModule, State) ->
 	receive
 		execute ->
-			State = CallbackModule:execute(State)
+			State = CallbackModule:execute(State);
+		quit ->
+			ams:unregister_agent(State#agent_state.name),
+			CallbackModule:quit(State)
 	end,
 	main_loop(CallbackModule, State).
 

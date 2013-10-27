@@ -6,10 +6,10 @@
 -export([start_link/0]).
 
 %% Agent management functions called from outside
--export([create_agent/3, execute_agent/1]).
+-export([create_agent/3, execute_agent/1, quit_agent/1]).
 
 %% Agent management functions called by an agent 
--export([register_agent/1, list_agents/0]).
+-export([register_agent/1, unregister_agent/1, list_agents/0]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -71,6 +71,13 @@ handle_call({register_agent, AgentInfo}, _From, #state{agent_list = AgentList}) 
     Reply = ok,
 	{reply, Reply, #state{agent_list = [AgentInfo|AgentList]} };
 
+handle_call({unregister_agent, Name}, _From, #state{agent_list = AgentList}) ->
+	io:format("Attempting to unregister an agent from the ams!~n"),
+	%% TODO: check if an agent with that name exists
+    Reply = ok,
+	{value, _AgentInfo, AgentList1} = lists:keytake(Name, 3, AgentList),
+	{reply, Reply, #state{agent_list = AgentList1} };
+
 handle_call(list_agents, _From, State = #state{agent_list = AgentList}) ->
     Reply = AgentList,
     {reply, Reply, State}.
@@ -98,10 +105,15 @@ handle_cast({create_agent, Module, Name, Arguments}, State) ->
 	{noreply, State};
 
 handle_cast({execute_agent, Name}, State = #state{agent_list = AgentList}) ->
-	%% get agent pid from the agent list
 	AgentInfo = lists:keyfind(Name, 3, AgentList),
 	agent:execute(AgentInfo#agent_info.pid),
+	{noreply, State};
+
+handle_cast({quit_agent, Name}, State = #state{agent_list = AgentList}) ->
+	AgentInfo = lists:keyfind(Name, 3, AgentList),
+	agent:quit(AgentInfo#agent_info.pid),
 	{noreply, State}.
+
 
 %%--------------------------------------------------------------------
 %% @private
@@ -151,6 +163,9 @@ register_agent(AgentInfo) ->
 list_agents() -> 
 	gen_server:call(?MODULE, list_agents).
 
+unregister_agent(Name) -> 
+	gen_server:call(?MODULE, {unregister_agent, Name}).
+
 %%%===================================================================
 %%% Internal functions called by a client
 %%%===================================================================
@@ -162,3 +177,6 @@ create_agent(Module, Name, Arguments) ->
 
 execute_agent(Name) ->
 	gen_server:cast(?MODULE, {execute_agent, Name}).
+
+quit_agent(Name) ->
+	gen_server:cast(?MODULE, {quit_agent, Name}).
