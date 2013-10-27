@@ -1,0 +1,2 @@
+-record(agent_state, {name}).
+-record(agent_info, {module, name, pid}).
