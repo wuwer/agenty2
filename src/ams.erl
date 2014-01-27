@@ -6,7 +6,7 @@
 -export([start_link/0]).
 
 %% Agent management functions called from outside
--export([create_agent/4, execute_agent/1, quit_agent/1, list_islands/0]).
+-export([create_agent/4, execute_agent/1, quit_agent/1,  move_agent/2, list_islands/0]).
 
 %% Agent management functions called by an agent 
 -export([register_agent/1, unregister_agent/1, list_agents/0, list_agents/1]).
@@ -116,6 +116,11 @@ handle_cast({execute_agent, Name}, State = #state{agent_list = AgentList}) ->
 	agent:execute(AgentInfo#agent_info.pid),
 	{noreply, State};
 
+handle_cast({move_agent, Name, ToIsland}, State = #state{agent_list = AgentList}) ->
+	AgentInfo = lists:keyfind(Name, 3, AgentList),
+	AgentList1 = lists:keyreplace(Name, 3, AgentList, AgentInfo#agent_info{island = ToIsland} ),
+	{noreply, State#state{agent_list = AgentList1}};
+
 handle_cast({quit_agent, Name}, State = #state{agent_list = AgentList}) ->
 	AgentInfo = lists:keyfind(Name, 3, AgentList),
 	agent:quit(AgentInfo#agent_info.pid),
@@ -193,3 +198,6 @@ quit_agent(Name) ->
 
 %% FIXME!
 list_islands() -> [island1, island2].
+
+move_agent(Name, ToIsland) ->
+	gen_server:cast(?MODULE, {move_agent, Name, ToIsland}).
