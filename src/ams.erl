@@ -6,10 +6,10 @@
 -export([start_link/0]).
 
 %% Agent management functions called from outside
--export([create_agent/3, execute_agent/1, quit_agent/1]).
+-export([create_agent/4, execute_agent/1, quit_agent/1, list_islands/0]).
 
 %% Agent management functions called by an agent 
--export([register_agent/1, unregister_agent/1, list_agents/0]).
+-export([register_agent/1, unregister_agent/1, list_agents/0, list_agents/1]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -80,6 +80,13 @@ handle_call({unregister_agent, Name}, _From, #state{agent_list = AgentList}) ->
 
 handle_call(list_agents, _From, State = #state{agent_list = AgentList}) ->
     Reply = AgentList,
+    {reply, Reply, State};
+
+handle_call({list_agents, Island}, _From, State = #state{agent_list = AgentList}) ->
+	Reply = lists:filter(
+				fun(#agent_info{island = AIsland}) when Island == AIsland -> true;
+				(_) -> false end,
+				AgentList),
     {reply, Reply, State}.
 
 
@@ -100,8 +107,8 @@ handle_call(list_agents, _From, State = #state{agent_list = AgentList}) ->
 %%--------------------------------------------------------------------
 %%
 
-handle_cast({create_agent, Module, Name, Arguments}, State) ->
-	agent:start_link(Module, Name, Arguments),
+handle_cast({create_agent, Module, Name, Arguments, Island}, State) ->
+	agent:start_link(Module, Name, Arguments, Island),
 	{noreply, State};
 
 handle_cast({execute_agent, Name}, State = #state{agent_list = AgentList}) ->
@@ -163,6 +170,9 @@ register_agent(AgentInfo) ->
 list_agents() -> 
 	gen_server:call(?MODULE, list_agents).
 
+list_agents(Island) -> 
+	gen_server:call(?MODULE, {list_agents, Island}).
+
 unregister_agent(Name) -> 
 	gen_server:call(?MODULE, {unregister_agent, Name}).
 
@@ -172,11 +182,14 @@ unregister_agent(Name) ->
 
 %% Module - name of the module implementing the agent callbacks
 %% Arguments - List of arguments passed to the init method
-create_agent(Module, Name, Arguments) -> 
-	gen_server:cast(?MODULE, {create_agent, Module, Name, Arguments}).
+create_agent(Module, Name, Arguments, Island) -> 
+	gen_server:cast(?MODULE, {create_agent, Module, Name, Arguments, Island}).
 
 execute_agent(Name) ->
 	gen_server:cast(?MODULE, {execute_agent, Name}).
 
 quit_agent(Name) ->
 	gen_server:cast(?MODULE, {quit_agent, Name}).
+
+%% FIXME!
+list_islands() -> [island1, island2].

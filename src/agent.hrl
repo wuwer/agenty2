@@ -1,2 +1,2 @@
 -record(agent_state, {name}).
--record(agent_info, {module, name, pid}).
+-record(agent_info, {module, name, pid, island}).
